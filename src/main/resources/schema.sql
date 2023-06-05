@@ -21,3 +21,10 @@ create table demo_user_reports (
 	longitude float(13,10) not null,
 	report_date date not null
 );
+
+create table demo_street_info (
+	info_id bigint primary key auto_increment,
+	severity varchar(255) not null,
+	latitude float(13,10) not null,
+	longitude float(13,10) not null
+);

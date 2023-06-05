@@ -1,5 +1,6 @@
 package com.example.demoserver.controllers;
 
+import com.example.demoserver.dtos.StreetInfoDTO;
 import com.example.demoserver.dtos.UserReportDTO;
 import com.example.demoserver.exceptions.UserAlreadyExistException;
 import com.example.demoserver.http.*;
@@ -24,9 +25,11 @@ public class DemoController {
     private final DemoService demoService;
 
     @PostMapping("/registration")
-    public ResponseEntity<String> registration(@RequestBody AuthenticationRequest authenticationRequest) throws UserAlreadyExistException {
-        log.info("Registration request received for username: " + authenticationRequest.getEmail());
-        String message = demoService.registration(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+    public ResponseEntity<String> registration(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistException {
+        log.info("Registration request received for username: " + registrationRequest.getEmail());
+        String message = demoService.registration(
+                registrationRequest.getEmail(),
+                registrationRequest.getPassword());
 
         return ResponseEntity.ok(message);
     }
@@ -65,6 +68,18 @@ public class DemoController {
                                                           @RequestParam float maxLongitude) {
         log.info("Get-report request received for username: " + email);
         List<UserReportDTO> reports = demoService.getReportsInsideBox(minLatitude, maxLatitude, minLongitude, maxLongitude);
+
+        return ResponseEntity.ok(reports);
+    }
+
+    @GetMapping("/get-street-info")
+    public ResponseEntity<List<StreetInfoDTO>> getStreetInfo(@RequestParam String email,
+                                                          @RequestParam float minLatitude,
+                                                          @RequestParam float maxLatitude,
+                                                          @RequestParam float minLongitude,
+                                                          @RequestParam float maxLongitude) {
+        log.info("Get-street-info request received for username: " + email);
+        List<StreetInfoDTO> reports = demoService.getStreetInfoInsideBox(minLatitude, maxLatitude, minLongitude, maxLongitude);
 
         return ResponseEntity.ok(reports);
     }

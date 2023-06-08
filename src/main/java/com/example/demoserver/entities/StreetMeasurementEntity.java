@@ -19,18 +19,24 @@ public class StreetMeasurementEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long measurementId;
     private long ts;
+    @Column(name = "user_id")
+    private String userId;
     private float longitude;
     private float latitude;
-    private float accelerometer_x;
-    private float accelerometer_y;
-    private float accelerometer_z;
+    @Column(name = "accelerometer_x")
+    private float accelerometerX;
+    @Column(name = "accelerometer_y")
+    private float accelerometerY;
+    @Column(name = "accelerometer_z")
+    private float accelerometerZ;
 
-    public StreetMeasurementEntity(long ts, float longitude, float latitude, float accelerometer_x, float accelerometer_y, float accelerometer_z) {
+    public StreetMeasurementEntity(long ts, String userId, float longitude, float latitude, float accelerometerX, float accelerometerY, float accelerometerZ) {
         this.ts = ts;
+        this.userId = userId;
         this.longitude = longitude;
         this.latitude = latitude;
-        this.accelerometer_x = accelerometer_x;
-        this.accelerometer_y = accelerometer_y;
-        this.accelerometer_z = accelerometer_z;
+        this.accelerometerX = accelerometerX;
+        this.accelerometerY = accelerometerY;
+        this.accelerometerZ = accelerometerZ;
     }
 }

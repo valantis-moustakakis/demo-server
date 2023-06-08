@@ -34,13 +34,14 @@ public class MqttHandler {
                 JSONObject jsonIncident = jsonArray.getJSONObject(i);
 
                 Long timestamp = jsonIncident.getLong("ts");
+                String user = jsonIncident.getString("user");
                 float longitude = jsonIncident.getFloat("lon");
                 float latitude = jsonIncident.getFloat("lat");
                 float accelerometerX = jsonIncident.getFloat("x");
                 float accelerometerY = jsonIncident.getFloat("y");
                 float accelerometerZ = jsonIncident.getFloat("z");
 
-                StreetMeasurementDTO streetMeasurement = new StreetMeasurementDTO(timestamp, longitude, latitude, accelerometerX, accelerometerY, accelerometerZ);
+                StreetMeasurementDTO streetMeasurement = new StreetMeasurementDTO(timestamp, user, longitude, latitude, accelerometerX, accelerometerY, accelerometerZ);
                 streetMeasurements.add(streetMeasurement);
             }
         } catch (JSONException e) {

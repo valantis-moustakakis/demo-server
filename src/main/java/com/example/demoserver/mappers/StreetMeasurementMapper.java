@@ -9,8 +9,9 @@ import java.util.stream.Collectors;
 public class StreetMeasurementMapper {
 
     public static StreetMeasurementEntity toStreetMeasurementEntity(StreetMeasurementDTO dto) {
-        return new StreetMeasurementEntity(dto.getTs(), dto.getLon(), dto.getLat(), dto.getX(), dto.getY(), dto.getZ());
+        return new StreetMeasurementEntity(dto.getTs(), dto.getUser(), dto.getLon(), dto.getLat(), dto.getX(), dto.getY(), dto.getZ());
     }
+
     public static List<StreetMeasurementEntity> toStreetMeasurementEntities(List<StreetMeasurementDTO> dtos) {
         return dtos.stream().map(StreetMeasurementMapper::toStreetMeasurementEntity).collect(Collectors.toList());
     }

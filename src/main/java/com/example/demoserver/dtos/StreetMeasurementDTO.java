@@ -9,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class StreetMeasurementDTO {
     private long ts;
+    private String user;
     private float lon;
     private float lat;
     private float x;

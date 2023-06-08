@@ -66,6 +66,7 @@ public class DemoService {
     }
 
     public String report(String email, String severity, String description, float latitude, float longitude) {
+        // TODO: move this code into mapper
         UserReportEntity entity = new UserReportEntity();
         entity.setUserEmail(email);
         entity.setSeverity(severity);

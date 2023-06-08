@@ -28,3 +28,13 @@ create table demo_street_info (
 	latitude float(13,10) not null,
 	longitude float(13,10) not null
 );
+
+create table demo_street_measurements (
+	measurement_id bigint primary key auto_increment,
+	ts bigint not null,
+	longitude float(12,10) not null,
+	latitude float(12,10) not null,
+	accelerometer_x float(12,10) not null,
+	accelerometer_y float(12,10) not null,
+	accelerometer_z float(12,10) not null
+);

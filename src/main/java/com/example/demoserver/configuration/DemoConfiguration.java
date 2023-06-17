@@ -27,7 +27,7 @@ public class DemoConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @Scheduled(fixedDelay = fixedDelay)
+//    @Scheduled(fixedDelay = fixedDelay)
     public void analyzeStreetMeasurements() {
         log.info("Starting analysis...");
         analyzer.analyzeStreetMeasurements();

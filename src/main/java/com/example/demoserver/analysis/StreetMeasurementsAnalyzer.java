@@ -10,6 +10,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.expressions.Window;
 import org.apache.spark.sql.expressions.WindowSpec;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import static org.apache.spark.sql.functions.lag;
 
 @Slf4j
 @RequiredArgsConstructor
+@Service
 public class StreetMeasurementsAnalyzer {
 
     private final Gson gson;

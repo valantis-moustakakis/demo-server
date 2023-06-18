@@ -17,9 +17,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 @RequiredArgsConstructor
 public class DemoConfiguration {
-
-    // TODO: define this threshold
-    private final int fixedDelay = 600000; // 10 minutes
     private final StreetMeasurementsAnalyzer analyzer;
 
     @Bean
@@ -27,7 +24,7 @@ public class DemoConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-//    @Scheduled(fixedDelay = fixedDelay)
+    @Scheduled(fixedDelayString = "${analysis.threshold}")
     public void analyzeStreetMeasurements() {
         log.info("Starting analysis...");
         analyzer.analyzeStreetMeasurements();

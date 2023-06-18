@@ -2,6 +2,7 @@ package com.example.demoserver.analysis;
 
 import com.example.demoserver.entities.StreetInfoEntity;
 import com.example.demoserver.repositories.StreetInfoRepository;
+import com.example.demoserver.repositories.StreetMeasurementRepository;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +11,11 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.expressions.Window;
 import org.apache.spark.sql.expressions.WindowSpec;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,19 +26,38 @@ import static org.apache.spark.sql.functions.lag;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class StreetMeasurementsAnalyzer {
 
     private final Gson gson;
     private final StreetInfoRepository streetInfoRepository;
+    private final StreetMeasurementRepository streetMeasurementRepository;
 
-    // TODO: define this limit
-    private static final int recordableLimit = 20;
+    @Value("${analysis.sum.threshold}")
+    private static int recordableLimit;
+
+    private SparkSession spark;
+
+    @Value("${analysis.low.min.limit}")
+    private float lowMinLimit;
+    @Value("${analysis.low.max.limit}")
+    private float lowMaxLimit;
+    @Value("${analysis.medium.min.limit}")
+    private float mediumMinLimit;
+    @Value("${analysis.medium.max.limit}")
+    private float mediumMaxLimit;
+    @Value("${analysis.high.min.limit}")
+    private float highMinLimit;
+    @Value("${analysis.high.max.limit}")
+    private float highMaxLimit;
 
     public void analyzeStreetMeasurements() {
-        SparkSession spark = SparkSession.builder()
+        spark = SparkSession.builder()
                 .appName("AccelerometerDataAnalysis")
                 .master("local[*]")
                 .getOrCreate();
+
+        long currentMillis = new Date().getTime();
 
         // Step 1: Read Data
         Dataset<Row> data = spark.read()
@@ -57,19 +80,20 @@ public class StreetMeasurementsAnalyzer {
 
         transformedData.createOrReplaceTempView("transformedData"); // Create a temporary view for the transformed data
 
-        // TODO: define these limits
-        Dataset<Row> locationsLow = getRowDataset(spark, 0.5f, 1);
-        Dataset<Row> locationsMedium = getRowDataset(spark, 1.01f, 1.75f);
-        Dataset<Row> locationsHigh = getRowDataset(spark, 1.76f, 10);
+        Dataset<Row> locationsLow = getRowDataset(lowMinLimit, lowMaxLimit);
+        Dataset<Row> locationsMedium = getRowDataset(mediumMinLimit, mediumMaxLimit);
+        Dataset<Row> locationsHigh = getRowDataset(highMinLimit, highMaxLimit);
 
         recordResults(locationsLow, "LOW");
         recordResults(locationsMedium, "MEDIUM");
         recordResults(locationsHigh, "HIGH");
 
+        streetMeasurementRepository.deleteByTsLessThan(currentMillis);
+
         spark.stop();
     }
 
-    private Dataset<Row> getRowDataset(SparkSession spark, float min, float max) {
+    private Dataset<Row> getRowDataset(float min, float max) {
         Dataset<Row> filteredData = spark.sql(
                 "WITH filteredData AS (" +
                         "SELECT *, lag(user_id) OVER (PARTITION BY user_id ORDER BY ts) AS prev_user_id " +

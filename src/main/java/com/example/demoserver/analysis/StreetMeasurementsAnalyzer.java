@@ -2,7 +2,6 @@ package com.example.demoserver.analysis;
 
 import com.example.demoserver.entities.StreetInfoEntity;
 import com.example.demoserver.repositories.StreetInfoRepository;
-import com.example.demoserver.repositories.StreetMeasurementRepository;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +12,7 @@ import org.apache.spark.sql.expressions.Window;
 import org.apache.spark.sql.expressions.WindowSpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,12 +23,10 @@ import static org.apache.spark.sql.functions.lag;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Transactional
 public class StreetMeasurementsAnalyzer {
 
     private final Gson gson;
     private final StreetInfoRepository streetInfoRepository;
-    private final StreetMeasurementRepository streetMeasurementRepository;
 
     @Value("${analysis.sum.threshold}")
     private static int recordableLimit;
@@ -56,8 +51,6 @@ public class StreetMeasurementsAnalyzer {
                 .appName("AccelerometerDataAnalysis")
                 .master("local[*]")
                 .getOrCreate();
-
-        long currentMillis = new Date().getTime();
 
         // Step 1: Read Data
         Dataset<Row> data = spark.read()
@@ -84,11 +77,9 @@ public class StreetMeasurementsAnalyzer {
         Dataset<Row> locationsMedium = getRowDataset(mediumMinLimit, mediumMaxLimit);
         Dataset<Row> locationsHigh = getRowDataset(highMinLimit, highMaxLimit);
 
-        recordResults(locationsLow, "LOW");
-        recordResults(locationsMedium, "MEDIUM");
         recordResults(locationsHigh, "HIGH");
-
-        streetMeasurementRepository.deleteByTsLessThan(currentMillis);
+        recordResults(locationsMedium, "MEDIUM");
+        recordResults(locationsLow, "LOW");
 
         spark.stop();
     }
@@ -120,8 +111,10 @@ public class StreetMeasurementsAnalyzer {
         for (Map.Entry<String, Integer> entry : groupingMap.entrySet()) {
             if (entry.getValue() > recordableLimit) {
                 Coordinates coordinates = gson.fromJson(entry.getKey(), Coordinates.class);
-                StreetInfoEntity entity = new StreetInfoEntity(severity, coordinates.getLatitude(), coordinates.getLongitude());
-                streetInfoRepository.save(entity);
+                if (streetInfoRepository.findByLatitudeAndLongitude(coordinates.getLatitude(), coordinates.getLongitude()) == null) {
+                    StreetInfoEntity entity = new StreetInfoEntity(severity, coordinates.getLatitude(), coordinates.getLongitude());
+                    streetInfoRepository.save(entity);
+                }
             }
         }
     }

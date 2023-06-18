@@ -14,4 +14,6 @@ public interface StreetInfoRepository extends JpaRepository<StreetInfoEntity, Lo
     @Query("SELECT s FROM StreetInfoEntity s WHERE s.latitude BETWEEN :minLat AND :maxLat AND s.longitude BETWEEN :minLon AND :maxLon")
     List<StreetInfoEntity> findStreetInfoWithinBoundingBox(@Param("minLat") float minLat, @Param("maxLat") float maxLat, @Param("minLon") float minLon, @Param("maxLon") float maxLon);
 
+    StreetInfoEntity findByLatitudeAndLongitude(float latitude, float longitude);
+
 }

@@ -38,9 +38,6 @@ public class DemoService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${registration.service.host}")
-    private String server;
-
     public String registration(String username, String password) throws UserAlreadyExistException {
         if (emailExists(username)) {
             throw new UserAlreadyExistException("There is an account with that email address: " + username);
@@ -66,7 +63,6 @@ public class DemoService {
     }
 
     public String report(String email, String severity, String description, float latitude, float longitude) {
-        // TODO: move this code into mapper
         UserReportEntity entity = new UserReportEntity();
         entity.setUserEmail(email);
         entity.setSeverity(severity);

@@ -51,12 +51,6 @@ public class MqttConfiguration {
             System.out.println("Received message: " + publish.getTopic() + " -> " + message);
             handler.handleMqttMessage(message);
         });
-
-        // publish a message to the topic "my/test/topic"
-//        client.publishWith()
-//                .topic("my/test/topic")
-//                .payload(UTF_8.encode("Hello"))
-//                .send();
     }
 }
 

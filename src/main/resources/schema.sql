@@ -26,7 +26,8 @@ create table demo_street_info (
 	info_id bigint primary key auto_increment,
 	severity varchar(255) not null,
 	latitude float(13,10) not null,
-	longitude float(13,10) not null
+	longitude float(13,10) not null,
+    constraint unique_latitude_longitude unique (latitude, longitude)
 );
 
 create table demo_street_measurements (

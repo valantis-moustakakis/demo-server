@@ -33,6 +33,10 @@ public class StreetMeasurementsAnalyzer {
 
     private SparkSession spark;
 
+    @Value("${analysis.smooth.min.limit}")
+    private float smoothMinLimit;
+    @Value("${analysis.smooth.max.limit}")
+    private float smoothMaxLimit;
     @Value("${analysis.low.min.limit}")
     private float lowMinLimit;
     @Value("${analysis.low.max.limit}")
@@ -73,6 +77,7 @@ public class StreetMeasurementsAnalyzer {
 
         transformedData.createOrReplaceTempView("transformedData"); // Create a temporary view for the transformed data
 
+        Dataset<Row> locationsSmooth = getRowDataset(smoothMinLimit, smoothMaxLimit);
         Dataset<Row> locationsLow = getRowDataset(lowMinLimit, lowMaxLimit);
         Dataset<Row> locationsMedium = getRowDataset(mediumMinLimit, mediumMaxLimit);
         Dataset<Row> locationsHigh = getRowDataset(highMinLimit, highMaxLimit);
@@ -80,6 +85,7 @@ public class StreetMeasurementsAnalyzer {
         recordResults(locationsHigh, "HIGH");
         recordResults(locationsMedium, "MEDIUM");
         recordResults(locationsLow, "LOW");
+        recordResults(locationsSmooth, "NO_SEVERITY");
 
         spark.stop();
     }
@@ -94,9 +100,9 @@ public class StreetMeasurementsAnalyzer {
                         "FROM filteredData " +
                         "WHERE user_id = prev_user_id " +
                         "AND (" +
-                        "   (accel_x_diff > " + min + " AND accel_x_diff < " + max + ") OR (accel_x_diff < -" + min + " AND accel_x_diff > -" + max + ")" +
-                        "   OR (accel_y_diff > " + min + " AND accel_y_diff < " + max + ") OR (accel_y_diff < -" + min + " AND accel_y_diff > -" + max + ")" +
-                        "   OR (accel_z_diff > " + min + " AND accel_z_diff < " + max + ") OR (accel_z_diff < -" + min + " AND accel_z_diff > -" + max + ")" +
+                        "   (accel_x_diff >= " + min + " AND accel_x_diff <= " + max + ") OR (accel_x_diff <= -" + min + " AND accel_x_diff >= -" + max + ")" +
+                        "   OR (accel_y_diff >= " + min + " AND accel_y_diff <= " + max + ") OR (accel_y_diff <= -" + min + " AND accel_y_diff >= -" + max + ")" +
+                        "   OR (accel_z_diff >= " + min + " AND accel_z_diff <= " + max + ") OR (accel_z_diff <= -" + min + " AND accel_z_diff >= -" + max + ")" +
                         ")");
 
         return filteredData.select("longitude", "latitude");

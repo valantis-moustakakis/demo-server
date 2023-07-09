@@ -5,7 +5,6 @@ import com.example.demoserver.dtos.UserReportDTO;
 import com.example.demoserver.entities.StreetInfoEntity;
 import com.example.demoserver.entities.UserAuthenticationEntity;
 import com.example.demoserver.entities.UserReportEntity;
-import com.example.demoserver.exceptions.UserAlreadyExistException;
 import com.example.demoserver.mappers.StreetInfoMapper;
 import com.example.demoserver.mappers.UserReportMapper;
 import com.example.demoserver.repositories.StreetInfoRepository;
@@ -14,7 +13,6 @@ import com.example.demoserver.repositories.UserReportRepository;
 import com.example.demoserver.utils.ResponseMessages;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,13 +36,13 @@ public class DemoService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-    public String registration(String username, String password) throws UserAlreadyExistException {
-        if (emailExists(username)) {
-            throw new UserAlreadyExistException("There is an account with that email address: " + username);
+    public String registration(String email, String password) {
+        if (emailExists(email)) {
+            return ResponseMessages.EMAIL_ALREADY_EXISTS;
         }
 
         UserAuthenticationEntity userAuthenticationEntity = new UserAuthenticationEntity();
-        userAuthenticationEntity.setEmail(username);
+        userAuthenticationEntity.setEmail(email);
         userAuthenticationEntity.setPassword(passwordEncoder.encode(password));
         userAuthenticationEntity.setEnabled(true);
         userAuthenticationRepository.save(userAuthenticationEntity);

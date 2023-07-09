@@ -29,7 +29,7 @@ public class StreetMeasurementsAnalyzer {
     private final StreetInfoRepository streetInfoRepository;
 
     @Value("${analysis.sum.threshold}")
-    private static int recordableLimit;
+    private int recordableLimit;
 
     private SparkSession spark;
 

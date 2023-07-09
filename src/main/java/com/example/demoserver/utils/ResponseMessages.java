@@ -3,7 +3,7 @@ package com.example.demoserver.utils;
 public class ResponseMessages {
 
     // Authentication ResponseMessages
-    public static final String WRONG_EMAIL_OR_PASSWORD = "Wrong username or password! Try again!";
+    public static final String WRONG_EMAIL_OR_PASSWORD = "Wrong email or password! Try again!";
     public static final String USER_SUCCESSFULLY_CREATED = "User Successfully Created!";
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists!";
     public static final String PASSWORDS_DO_NOT_MATCH = "Passwords do not match!";

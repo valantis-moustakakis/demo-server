@@ -2,7 +2,8 @@ package com.example.demoserver.mqtt;
 
 import com.hivemq.client.mqtt.MqttClient;
 import com.hivemq.client.mqtt.mqtt5.Mqtt5BlockingClient;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,15 +11,22 @@ import static com.hivemq.client.mqtt.MqttGlobalPublishFilter.ALL;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Configuration
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MqttConfiguration {
 
-    final String host = "f0cdbc9159594b919d68036f1fc85241.s2.eu.hivemq.cloud";
-    final String username = "UPMFinalThesis2023";
-    final String password = "UPMFinalThesis2023";
-    final String topic = "measurements";
+    @Value("${mqtt.broker.url}")
+    private String host;
 
-    MqttHandler handler;
+    @Value("${mqtt.broker.username}")
+    private String username;
+
+    @Value("${mqtt.broker.password}")
+    private String password;
+
+    @Value("${mqtt.broker.topic}")
+    private String topic;
+
+    private final MqttHandler handler;
 
     @Bean
     public void initializeMqttConnection() {
@@ -30,7 +38,7 @@ public class MqttConfiguration {
                 .sslWithDefaultConfig()
                 .buildBlocking();
 
-        // connect to HiveMQ Cloud with TLS and username/pw
+        // connect to HiveMQ Cloud with TLS and username/password
         client.connectWith()
                 .simpleAuth()
                 .username(username)

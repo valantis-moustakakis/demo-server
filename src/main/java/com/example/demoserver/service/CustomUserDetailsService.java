@@ -4,8 +4,6 @@ import com.example.demoserver.entities.UserAuthenticationEntity;
 import com.example.demoserver.repositories.UserAuthenticationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -48,17 +45,5 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.isCredentialsNonExpired(),
                 user.isAccountNonLocked(),
                 new ArrayList<>());
-    }
-
-    @Transactional
-    public void lockAccount(String email) {
-        Optional<UserAuthenticationEntity> optional = repository.findById(email);
-        UserAuthenticationEntity user = optional.orElse(null);
-        if (user != null) {
-            user.setAccountNonLocked(false);
-            repository.save(user);
-        } else {
-            log.warn("There is no user with email: " + email);
-        }
     }
 }

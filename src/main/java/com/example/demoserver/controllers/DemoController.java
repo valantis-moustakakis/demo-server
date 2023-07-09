@@ -2,7 +2,6 @@ package com.example.demoserver.controllers;
 
 import com.example.demoserver.dtos.StreetInfoDTO;
 import com.example.demoserver.dtos.UserReportDTO;
-import com.example.demoserver.exceptions.UserAlreadyExistException;
 import com.example.demoserver.http.*;
 import com.example.demoserver.service.DemoService;
 import com.example.demoserver.utils.ResponseMessages;
@@ -25,8 +24,8 @@ public class DemoController {
     private final DemoService demoService;
 
     @PostMapping("/registration")
-    public ResponseEntity<String> registration(@RequestBody RegistrationRequest registrationRequest) throws UserAlreadyExistException {
-        log.info("Registration request received for username: " + registrationRequest.getEmail());
+    public ResponseEntity<String> registration(@RequestBody RegistrationRequest registrationRequest) {
+        log.info("Registration request received for email: " + registrationRequest.getEmail());
         String message = demoService.registration(
                 registrationRequest.getEmail(),
                 registrationRequest.getPassword());
@@ -36,7 +35,7 @@ public class DemoController {
 
     @PostMapping("/authentication")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest authenticationRequest) {
-        log.info("Authentication request received with username: " + authenticationRequest.getEmail());
+        log.info("Authentication request received with email: " + authenticationRequest.getEmail());
         String message = ResponseMessages.WRONG_EMAIL_OR_PASSWORD;
         String jwt = demoService.authentication(authenticationRequest.getEmail(), authenticationRequest.getPassword());
         if (jwt != null) {
@@ -49,7 +48,7 @@ public class DemoController {
 
     @PostMapping("/report")
     public ResponseEntity<String> report(@RequestBody ReportRequest reportRequest) {
-        log.info("Report request received for username: " + reportRequest.getEmail());
+        log.info("Report request received for email: " + reportRequest.getEmail());
         String message = demoService.report(
                 reportRequest.getEmail(),
                 reportRequest.getSeverity().name(),
@@ -66,7 +65,7 @@ public class DemoController {
                                                           @RequestParam float maxLatitude,
                                                           @RequestParam float minLongitude,
                                                           @RequestParam float maxLongitude) {
-        log.info("Get-report request received for username: " + email);
+        log.info("Get-report request received for email: " + email);
         List<UserReportDTO> reports = demoService.getReportsInsideBox(minLatitude, maxLatitude, minLongitude, maxLongitude);
 
         return ResponseEntity.ok(reports);
@@ -78,7 +77,7 @@ public class DemoController {
                                                           @RequestParam float maxLatitude,
                                                           @RequestParam float minLongitude,
                                                           @RequestParam float maxLongitude) {
-        log.info("Get-street-info request received for username: " + email);
+        log.info("Get-street-info request received for email: " + email);
         List<StreetInfoDTO> reports = demoService.getStreetInfoInsideBox(minLatitude, maxLatitude, minLongitude, maxLongitude);
 
         return ResponseEntity.ok(reports);
